@@ -8,7 +8,7 @@ scale_bit=52 # 52
 dataset="cifar100" #"tiny_imagenet" #"cifar100"
 
 model="lenet_DLG" # "efficientnetb0" #"lenet_DLG" # "mobilenet_v3" #"lenet_DLG"
-load_smap_dir="" 
+load_smap_dir="no" 
 
 s_ratio=0.5
 s_method="magnitude"
