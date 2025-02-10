@@ -156,7 +156,24 @@ def calculate_smap_jacob(train_loader, batchsize, model, criterion, device):
                     abs_sum_jacob = torch.sum(torch.abs(jms_jocob_transpose), dim=2)
                     # Transpose to get the shape [batch, #layer_param]
                     abs_sum_jacob = abs_sum_jacob.t()
+                    # Convert to a list of lists
+                    weight_jm_jacob = abs_sum_jacob.tolist()
+
                     print(f"   jacob processed, takes {jm_layer_second_der_time2}")
+                    
+                    # reshape the list to tensors (maps that are the same dim as the model)
+                    flat_tensor_jacob = torch.tensor([])
+                    for idx, each_weight_jm_jacob in enumerate(weight_jm_jacob): # i iterates through 0 ~ batchsize
+                        # the last batch may not have the #batch items, null items don't have length
+                        if len(each_weight_jm_jacob) > 0: # each_weight_jm: len of the layer
+                            flat_tensor_jacob = torch.tensor(each_weight_jm_jacob)
+                            # reshaped_tensor = flat_tensor_jacob.reshape(model.state_dict()[key].shape) # causes error "shape '[32]' is invalid for input of size 288" for layer stem.0.bn.running_mean
+                            reshaped_tensor = flat_tensor_jacob.reshape(param_layer.shape)
+
+                            # batch: number of current executed batch, use it to control with location to store
+                            # print(f"     idx: {batch* batchsize + idx} with key {key}") 
+                            s_maps_jacob[batch* batchsize + idx][name] = reshaped_tensor # consumes memory
+                            # valid_idx = batch* batchsize + idx # DEL, only for small portion of batches
 
                 jm_layer_end_t = time.time()
                 jm_layer_time = jm_layer_end_t - jm_layer_start_t
