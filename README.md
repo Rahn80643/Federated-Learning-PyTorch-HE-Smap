@@ -1,4 +1,4 @@
-# FedPHE: Federated Learning with Homomorphic Encryption
+# [Paper name]
 
 This code applies homomorphic encryption (CKKS scheme) to federated learning. The implementation is adopted from [**Federated-Learning-PyTorch**](https://github.com/c-gabri/Federated-Learning-PyTorch). Clients train and encrypt models locally, while the server aggregates encrypted models without accessing the exact model parameters.
 
@@ -8,7 +8,7 @@ This code applies homomorphic encryption (CKKS scheme) to federated learning. Th
 
 ## Citation
 
-If you find FedPHE useful or relevant to your research, please kindly cite our paper using the following BibTeX:
+If you find [Paper name] useful or relevant to your research, please kindly cite our paper using the following BibTeX:
 
 ```bibtex
 @inproceedings{[citation_key],
