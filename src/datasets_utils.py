@@ -132,22 +132,7 @@ class TinyImageNetSubset(TinyImageNetDataset):
     def __len__(self):
         return len(self.idxs)
 
-    def __getitem__(self, idx, augmented=True, normalized=True):
-        # # debug
-        # # Get the caller's frame
-        # caller_frame = inspect.currentframe().f_back
-        
-        # # Get caller function name
-        # caller_name = caller_frame.f_code.co_name
-        
-        # # Get caller file name and line number
-        # caller_filename = caller_frame.f_code.co_filename
-        # caller_line = caller_frame.f_lineno
-        
-        # print(f"Called by {caller_name} from {caller_filename} at line {caller_line}")
-
-        # # debug
-        
+    def __getitem__(self, idx, augmented=True, normalized=True):        
         image, label = self.dataset[self.idxs[idx]]
 
         # print(f"TinyImageNetSubset, self.dataset: {type(self.dataset)} type of image: {image.type}; idx: {idx}")
@@ -192,20 +177,6 @@ class Subset(torch.utils.data.Dataset):
         stop =1
 
     def __getitem__(self, idx, augmented=True, normalized=True):
-
-        # # debug
-        # # Get the caller's frame
-        # caller_frame = inspect.currentframe().f_back
-        
-        # # Get caller function name
-        # caller_name = caller_frame.f_code.co_name
-        
-        # # Get caller file name and line number
-        # caller_filename = caller_frame.f_code.co_filename
-        # caller_line = caller_frame.f_lineno
-        
-        # print(f"Called by {caller_name} from {caller_filename} at line {caller_line}")
-        # debug
         
         example, target = self.dataset[self.idxs[idx]]
         example = tvtransforms.ToTensor()(example)
@@ -217,16 +188,6 @@ class Subset(torch.utils.data.Dataset):
             example = self.normalize(example)
         # print(f"In Subset, normalized image range: [{example.min()}, {example.max()}]")
 
-        # #  debug
-        # mean = torch.tensor(self.normalize.mean, dtype=torch.float32)
-        # std = torch.tensor(self.normalize.std, dtype=torch.float32)
-        # denormalize = tvtransforms.Normalize(
-        #     mean=[-m/s for m, s in zip(mean, std)],
-        #     std=[1/s for s in std]
-        # ) # https://github.com/pytorch/vision/issues/528
-        # image_inv = denormalize(example)
-        # print(f"In Subset, normalize_inv image range: [{image_inv.min()}, {image_inv.max()}]")
-        
         return example, target
 
     def __len__(self):

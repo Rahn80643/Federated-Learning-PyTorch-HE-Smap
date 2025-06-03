@@ -64,7 +64,7 @@ class Client(object):
     # generate sensitivity map based on jacobian of graidents
     def gen_map_grad(self, model, model_enc, model_param, model_layer_size_enc, optim, device, HE_context, pub_context, priv_context, HE_method, args):
         # Decrypt model
-        model_dict, dec_time, reshape_time = he_utils.decrypt_model_separate(HE_method, model_enc, model_layer_size_enc, HE_context, priv_context, model_param, args)# TODO: DEL, only validate if encryption is correct
+        model_dict, dec_time, reshape_time = he_utils.decrypt_model_separate(HE_method, model_enc, model_layer_size_enc, HE_context, priv_context, model_param, args)
         model.load_state_dict(model_dict) # get decrypted weight
 
         # Create training loader
@@ -96,7 +96,7 @@ class Client(object):
         # for name, param in s_map_sum.named_parameters():
         #     print(f"{name}: {param.unique()}; {s_map_sum.state_dict()[name].shape}")
             
-        # s_maps_all = [] # = [{} for _ in range(len(train_loader.dataset))] # TODO: verify if consumes lots of memory, for all data points
+        # s_maps_all = [] # = [{} for _ in range(len(train_loader.dataset))] 
         s_maps_layer_time = [{} for _ in range(len(train_loader.dataset))] # for saving execution time of smap per batch; TODO: mod len(train_loader.dataset) as number of batches
         jm_batch_times = []
         jm_layer_second_der_times = []
@@ -127,8 +127,6 @@ class Client(object):
         exec_time_dict_jacob["jm_layer_second_der_times"] = jm_layer_second_der_times
         exec_time_dict_jacob["s_maps_layer_time"] = s_maps_layer_time
         exec_time_dict_jacob["jm_batch_times"] = jm_batch_times
-
-        # TODO: encrypt smap
 
 
         return model_s_map_jacob, exec_time_dict_jacob, s_map_sum, map_avg_jacob_orig
@@ -221,7 +219,7 @@ class Client(object):
             if(args.s_ratio > 0.0):
                 model_dec_ctxt_dict, HE_dec_time, non_HE_reshape_ctxt_time = \
                     he_utils.partial_decrypt_model_separate(HE_method, model_enc_dict, model_layer_size_enc, \
-                                                            HE_context, priv_context, model.state_dict(), mask_indices, args)# TODO: DEL, only validate if encryption is correct
+                                                            HE_context, priv_context, model.state_dict(), mask_indices, args)
                 
                 
                 
@@ -269,7 +267,7 @@ class Client(object):
             stop = 1
 
         # originally, the optimizer needs optim.param_groups[0]['params'] = list(client_model.parameters()) but this version uses dict; therefore, assign optim here
-        optim.param_groups[0]['params'] = list(model.parameters()) # TODO: 20240828, check if accuracy is increased
+        optim.param_groups[0]['params'] = list(model.parameters()) 
 
         # Train local model
         # Drop client if train set is empty
@@ -400,7 +398,6 @@ class Client(object):
                 layer_weight_flatten = masked_model_dict[layer_name].cpu().numpy().flatten()
                 layer_to_enc_params[layer_name] = [layer_weight_flatten[idx] for idx in non_zero_indices]
 
-        # TODO: pay at to s_ratio == 1.0
 
         non_HE_select_flat_t_end = time.time()
         non_HE_select_flat_time = non_HE_select_flat_t_end - non_HE_select_flat_t_start
@@ -431,7 +428,7 @@ class Client(object):
             part_enc_model_dict, unmasked_part_model_dict, part_enc_layer_size, mask_indices, \
             len(train_loader.dataset), iter, loss_running, \
             local_train_time, HE_enc_time, non_HE_flat_time, HE_dec_time, non_HE_reshape_ctxt_time, \
-            non_HE_recover_model_time, non_HE_reshape_ptxt_time, non_HE_mask_model_time, non_HE_select_flat_time # TODO: combine HE_select_flat_time and flat_time
+            non_HE_recover_model_time, non_HE_reshape_ptxt_time, non_HE_mask_model_time, non_HE_select_flat_time 
 
     
     def inference(self, model, type, device):

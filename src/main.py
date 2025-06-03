@@ -143,9 +143,7 @@ if __name__ == '__main__':
     model = getattr(models, args.model)(num_classes, num_channels, args.model_args).to(args.device)
     model_param = deepcopy(model.state_dict())
 
-    # TODO: experiment if resume == True
     if args.resume: # if resume training the model
-        # TODO: load encrypted model for OpenFHE and TenSeal
         if HE_method == "Pyfhel_CKKS":
             model_enc_global = checkpoint['model_enc']            
 
@@ -335,6 +333,8 @@ if __name__ == '__main__':
     mask_gen_t_end = time.time()
     mask_gen_time = mask_gen_t_end - mask_gen_t_end 
 
+    print("Sensitivity map generated!")
+
     # Train clients
     c_part_enc_layer_size = {}
     mask_indices = {}
@@ -407,7 +407,7 @@ if __name__ == '__main__':
             if client_model_dict_comparison is not None:
                 client_models.append(deepcopy(client_model_dict_comparison))
 
-            if c_part_enc_model_dict is not None: # TODO: rename, better names
+            if c_part_enc_model_dict is not None: 
                 # deepcopy error for pyfhel: CKKS scheme requires a list of prime sizes (qi_sizes) or primes (qi) to be set
                 enc_models.append(deepcopy(c_part_enc_model_dict))
 
@@ -485,7 +485,7 @@ if __name__ == '__main__':
         # Finish aggregating ciphertexts
 
         
-        HE_ctxt_agg_time_dict[round] = HE_ctxt_agg_time # TODO: unifrom naming, HE_ctxt_agg_time_dicts
+        HE_ctxt_agg_time_dict[round] = HE_ctxt_agg_time 
         nonHE_ptxt_agg_time_dict[round] = nonHE_ptxt_agg_time
         non_HE_time_dict[round] = non_HE_time
 
@@ -537,7 +537,6 @@ if __name__ == '__main__':
         # global_model_dec: for measuring the size of plaintext model
         checkpoint["HE_method"] = HE_method
 
-        # TODO: modify decrypted model to be saved as plaintext model
         if HE_method == "Pyfhel_CKKS" and args.s_ratio > 0.0:
             checkpoint['model_enc'] = update_avg_HE 
             # update_avg_HE.save(os.path.join(datafolder, "model_enc"))
@@ -582,7 +581,7 @@ if __name__ == '__main__':
                                                     HE_context, skContext, model.state_dict(), mask_indices, args)# TODO: DEL, only validate if encryption is correct
 
             # save aggregated models for the next training round
-            model_enc_global = deepcopy(update_avg_HE) # TODO: pay at to update_avg_HE when s_ratio == 0.0
+            model_enc_global = deepcopy(update_avg_HE) 
         
 
         # for validating final accuracy

@@ -36,8 +36,8 @@ def calculate_smap_magnitude(train_loader, batchsize, model, criterion, device):
     smap_jm_start_t = time.time()
     for batch, (x, y) in enumerate(train_loader):
         jm_batch_start_t = time.time()
-        if batch < len(train_loader): 
-        # if batch < 2: # for testing desired #batches
+        # if batch < len(train_loader): 
+        if batch < 2: # for testing desired #batches
             print(f'Batch: {batch+1}/{len(train_loader)} (Image: {num_images}/{len(train_loader.dataset)})')
 
             x, y = x.to(device), y.to(device)
@@ -92,14 +92,14 @@ def calculate_smap_magnitude(train_loader, batchsize, model, criterion, device):
 def calculate_smap_jacob(train_loader, batchsize, model, criterion, device):
     s_maps_jacob = [{} for _ in range(len(train_loader.dataset))]
     num_images = 0 # for logging progress of batch
-    s_maps_layer_time = [{} for _ in range(len(train_loader.dataset))] # for saving execution time of smap per batch; TODO: mod len(train_loader.dataset) as number of batches
+    s_maps_layer_time = [{} for _ in range(len(train_loader.dataset))] # for saving execution time of smap per batch
     jm_batch_times = []
     jm_layer_second_der_times = []
 
     smap_jm_start_t = time.time()
     for batch, (x, y) in enumerate(train_loader):
         jm_batch_start_t = time.time()
-        if batch < len(train_loader): # 3: # TODO: DEL, only takes 3 batches for example
+        if batch < len(train_loader): 
             x, y = x.to(device), y.to(device)
             num_images += len(y)
             print(f'Batch: {batch+1}/{len(train_loader)} (Image: {num_images}/{len(train_loader.dataset)})')
@@ -201,7 +201,7 @@ def avg_batch_maps(s_maps_jacob, model, num_images):
 
 
     for key in model.state_dict().keys(): # each layer
-        if key in s_maps_jacob[0].keys(): # TODO: del, coz it's only for a small portion of s_maps, cause problem coz fc1, fc2 don't exist in dict
+        if key in s_maps_jacob[0].keys(): 
             for i in range(1, len(s_maps_jacob)): # each batch item
                 if bool(s_maps_jacob[i]): #DEL: only records small layers
                     map_sum_jacob[key] = torch.add(torch.abs(map_sum_jacob[key]), torch.abs(s_maps_jacob[i][key]))
@@ -212,7 +212,7 @@ def avg_batch_maps(s_maps_jacob, model, num_images):
     smap_calc_avg_end_t = time.time()
     smap_calc_avg_time = smap_calc_avg_end_t - smap_calc_avg_start_t
     
-    return map_avg_jacob, map_sum_jacob, smap_calc_avg_time # TODO: remove map_sum_jacob, for validation
+    return map_avg_jacob, map_sum_jacob, smap_calc_avg_time 
 
 def log_weights(writer, model, step):
     for name, param in model.named_parameters():
@@ -292,7 +292,7 @@ def sort_and_get_top_params_globally(model, ratio):
     # Collect all weights and their info
     for name, param in model.named_parameters():
         # if 'weight' in name:  # Consider only weight parameters
-        # Consider both bias and weight: TODO: discuss whether consider weight or not
+        # Consider both bias and weight
             flat_params = param.data.flatten()
             param_shapes[name] = param.shape
 
@@ -356,15 +356,11 @@ def sort_and_get_top_weights_layer(model, ratio):
 def mask_model(model, mask):
     masked_model = {} # for encryption
     unmasked_model = {}
-    # unmasked_model_zeros = {} # 2025.01.14, set the unmasked values (unimportant params) as 0 to compare to Optimal_Defenses_Against_Gradient_Reconstruction_Attacks 
     unmasked_part_model = {} # for not encrypted parameters
-    # unmasked_part_model_zeros = {}
 
     for name, param in model.named_parameters():
         masked_model[name] = param.data * mask[name].to(param.data.device)
-        unmasked_model[name] = param.data * (1-mask[name].to(param.data.device)) # 2025.01.14, set the unmasked values (unimportant params) as 0 to compare to Optimal_Defenses_Against_Gradient_Reconstruction_Attacks
-        # unmasked_model_zeros[name] = torch.zeros_like(param.data * (1-mask[name].to(param.data.device)))
-
+        unmasked_model[name] = param.data * (1-mask[name].to(param.data.device))
 
         # Flatten the parameter and mask
         flat_param = param.data.flatten()
@@ -373,10 +369,6 @@ def mask_model(model, mask):
         # Keep only the values where mask is not 0
         unmasked_values = flat_param[flat_mask == 0]
         unmasked_part_model[name] = unmasked_values
-
-        # unmasked_values = flat_param.clone()
-        # unmasked_values[flat_mask == 0] = 0 # 2025.01.14, set the unmasked values (unimportant params) as 0 to compare to Optimal_Defenses_Against_Gradient_Reconstruction_Attacks
-        # unmasked_part_model_zeros[name] = unmasked_values
 
         
     return masked_model, unmasked_model, unmasked_part_model # unmasked_model: not used

@@ -22,22 +22,22 @@ import torchvision.transforms as tvtransforms
 
 from datasets_utils import get_datasets, get_datasets_tiny_imagenet
 
-'''
-def cifar10(args, dataset_args):
-    if 'augment' in dataset_args and not dataset_args['augment']:
-        train_augment, test_augment = None, None
-    else:
-        train_augment = tvtransforms.Compose([
-            tvtransforms.RandomCrop(24),
-            tvtransforms.RandomHorizontalFlip(),
-            tvtransforms.ColorJitter(brightness=(0.5,1.5), contrast=(0.5,1.5)),
-        ])
-        test_augment = tvtransforms.CenterCrop(24)
+# '''
+# def cifar10(args, dataset_args):
+#     if 'augment' in dataset_args and not dataset_args['augment']:
+#         train_augment, test_augment = None, None
+#     else:
+#         train_augment = tvtransforms.Compose([
+#             tvtransforms.RandomCrop(24),
+#             tvtransforms.RandomHorizontalFlip(),
+#             tvtransforms.ColorJitter(brightness=(0.5,1.5), contrast=(0.5,1.5)),
+#         ])
+#         test_augment = tvtransforms.CenterCrop(24)
 
-    return get_datasets(name='CIFAR10', train_augment=train_augment, test_augment=test_augment, args=args)
-'''
+#     return get_datasets(name='CIFAR10', train_augment=train_augment, test_augment=test_augment, args=args)
+# '''
 
-# new, 2024.06.24, follow the same preprocessing method as cifar10 does
+
 def cifar100(args, dataset_args):
     if 'augment' in dataset_args and not dataset_args['augment']:
         train_augment, test_augment = None, None

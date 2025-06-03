@@ -48,7 +48,7 @@ def args_parser():
     args_algo = parser.add_argument_group('algorithm arguments')
 
     args_algo_rounds_iters = args_algo.add_mutually_exclusive_group()
-    args_algo_rounds_iters.add_argument('--rounds', type=int, default=50,
+    args_algo_rounds_iters.add_argument('--rounds', type=int, default=2,
                         help="number of communication rounds, or number of epochs if --centralized")
     args_algo_rounds_iters.add_argument('--iters', type=int, default=None,
                         help="number of iterations: the iterations of a round are determined by the client with the largest number of images")
@@ -56,7 +56,7 @@ def args_parser():
                         help="number of clients")
     args_algo.add_argument('--frac_clients', '-C', type=float, default=1, 
                         help="fraction of clients selected at each round")
-    args_algo.add_argument('--train_bs', '-B', type=int, default=16, 
+    args_algo.add_argument('--train_bs', '-B', type=int, default=2, 
                         help="client training batch size, 0 to use the whole training set")
     args_algo.add_argument('--epochs', '-E', type=int, default=10, 
                         help="number of client epochs")
@@ -94,7 +94,7 @@ def args_parser():
 
     # Model, optimizer and scheduler arguments
     args_model_optim_sched = parser.add_argument_group('model, optimizer and scheduler arguments')
-    args_model_optim_sched.add_argument('--model', type=str, default='lenet_DLG', choices=[c[0] for c in getmembers(models, isclass) if c[1].__module__ == 'models'],
+    args_model_optim_sched.add_argument('--model', type=str, default='efficientnetb5', choices=[c[0] for c in getmembers(models, isclass) if c[1].__module__ == 'models'],
                         help="model, place yours in models.py") # 'lenet', 'lenet_DLG', 'ConvNet', 'mobilenet_v3', 'efficientnet', 'resnet18'
     args_model_optim_sched.add_argument('--model_args', type=str, default='ghost=True,norm=None',
                         help="model arguments")

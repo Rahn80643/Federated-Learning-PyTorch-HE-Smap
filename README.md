@@ -1,16 +1,47 @@
-# Federated Visual Classification (PyTorch):
-This code applies homomorphic encryption (CKKS scheme) to federated learning, the code is adopted from `github.com:c-gabri/Federated-Learning-PyTorch`. Clients train and encrypt models, the server aggregates on encrypted models without knowing the exact model parameters.
+# FedPHE: Federated Learning with Homomorphic Encryption
 
-## Environment
-This code is executed under the envrionment listed below:
-- Ubuntu 20.04.2
-- Cuda + Cudnn
-- Python 3.7
-- g++ 9.4.0
-- anaconda 4.8.2
+This code applies homomorphic encryption (CKKS scheme) to federated learning. The implementation is adopted from [**Federated-Learning-PyTorch**](https://github.com/c-gabri/Federated-Learning-PyTorch). Clients train and encrypt models locally, while the server aggregates encrypted models without accessing the exact model parameters.
 
-## Requirements for Python
-Please refer to `requirements.txt` for all used packages
+## Abstract
+
+[Insert your paper abstract here]
+
+## Citation
+
+If you find FedPHE useful or relevant to your research, please kindly cite our paper using the following BibTeX:
+
+```bibtex
+@inproceedings{[citation_key],
+  title={[Paper Title]},
+  author={[Author Names]},
+  booktitle={[Conference or Journal Name]},
+  pages={[Page Numbers]},
+  year={[Year]},
+  organization={[Organization]}
+}
+```
+
+## Usage
+
+### Environment
+
+This code has been tested under the following environment:
+
+- **Operating System**: Ubuntu 20.04.2
+- **GPU Support**: CUDA + cuDNN
+- **Python Version**: 3.7
+- **Compiler**: g++ 9.4.0
+- **Package Manager**: Anaconda 4.8.2
+
+### Python Requirements
+
+Install all required packages using the provided `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+**Package versions:**
 ```
 matplotlib==3.5.3
 numpy==1.21.6
@@ -24,203 +55,236 @@ torchtext==0.14.1
 torchvision==0.14.1
 ```
 
-## Install OpenFHE
-OpenFHE requires developers to compile the source code (C++) and Python wrapper.
-**Compiling C++ source code** <br>
-https://openfhe-development.readthedocs.io/en/latest/sphinx_rsts/intro/installation/linux.html<br>
+### Install OpenFHE
 
-1. Install packages on the system:<br> `sudo apt-get install build-essential cmake clang libomp5 libomp-dev autoconf`
-2. Setup clang: Run the following two commands to configure clang/clang++ as the default compiler for C and C++ (default paths are used here). For clang 11:<br>
-    `export CC=/usr/bin/clang-11`<br>
-    `export CXX=/usr/bin/clang++-11`
+OpenFHE requires compiling both the C++ source code and Python wrapper.
 
-    For a default version of clang, e.g., v6 in Ubuntu 20.04:<br>
-    `export CC=/usr/bin/clang`<br>
-    `export CXX=/usr/bin/clang++`
+#### Compiling C++ Source Code
 
-3. `git clone https://github.com/openfheorg/openfhe-development.git`
+Follow the official installation guide: [OpenFHE Linux Installation](https://openfhe-development.readthedocs.io/en/latest/sphinx_rsts/intro/installation/linux.html)
 
-4. Make sure the version is v1.1.2:<br>
-    `cd openfhe-development`<br>
-    `git checkout v1.1.2`<br>
+1. **Install system packages:**
+   ```bash
+   sudo apt-get install build-essential cmake clang libomp5 libomp-dev autoconf
+   ```
 
-     ![image](install_images/openfhe-dev-version.png)
+2. **Configure clang as the default compiler:**
+   
+   For clang 11:
+   ```bash
+   export CC=/usr/bin/clang-11
+   export CXX=/usr/bin/clang++-11
+   ```
+   
+   For default clang version (e.g., v6 in Ubuntu 20.04):
+   ```bash
+   export CC=/usr/bin/clang
+   export CXX=/usr/bin/clang++
+   ```
 
-5. Compile: at the directory `<path to openfhe-development>/openfhe-development`:<br>
-    `mkdir build`<br>
-    `cd build`<br>
-    `cmake ..`<br>
-    `make`<br>
-    `make install`<br>
+3. **Clone and checkout specific version:**
+   ```bash
+   git clone https://github.com/openfheorg/openfhe-development.git
+   cd openfhe-development
+   git checkout v1.1.2
+   ```
 
-6. Test installation:<br>
-    Run unit tests to make sure all capabilities operate as expected: <br>
-    `sudo make testall`<br>
+4. **Compile and install:**
+   ```bash
+   mkdir build && cd build
+   cmake ..
+   make
+   make install
+   ```
 
-    Run sample code to test:<br>
-    `bin/examples/pke/simple-integers`<br>
+5. **Test installation:**
+   ```bash
+   # Run unit tests
+   sudo make testall
+   
+   # Run sample code
+   bin/examples/pke/simple-integers
+   ```
 
+#### Compiling Python Wrapper
 
+Follow the official Python wrapper guide: [OpenFHE Python](https://github.com/openfheorg/openfhe-python)
 
-**Compiling Python wrapper**<br>
-https://github.com/openfheorg/openfhe-python <br>
+1. **Clone and checkout specific version:**
+   ```bash
+   git clone https://github.com/openfheorg/openfhe-python.git
+   cd openfhe-python
+   git checkout v0.8.5
+   ```
 
-1. `git clone https://github.com/openfheorg/openfhe-python.git`
+2. **Install required Python package:**
+   ```bash
+   pip install "pybind11[global]"
+   ```
 
-2. Make sure the version is v0.8.5:<br>
-    `cd openfhe-python`<br>
-    `git checkout v0.8.5`<br>
+3. **Compile and install:**
+   ```bash
+   mkdir build && cd build
+   cmake ..  # Use -DOpenFHE_DIR=/path/to/installed/openfhe if installed elsewhere
+   make
+   make install  # May require sudo
+   ```
 
-    ![image](install_images/openfhe-python-version.png)
+4. **Test installation:**
+   ```bash
+   python -c "__import__('openfhe')"
+   ```
 
-3. Install required package in Python:<br>
-`pip install "pybind11[global]"`<br>
+5. **Copy compiled library:**
+   Copy the compiled `openfhe.cpython-37m-x86_64-linux-gnu.so` file to:
+   ```
+   <path_to_project>/Federated-Learning-PyTorch_HE_share/src/
+   ```
 
-4. At the directory `<path to openfhe-python>/openfhe-python`:<br>
-    `mkdir build`<br>
-    `cd build`<br>
-    `cmake ..  # Alternatively, cmake .. -DOpenFHE_DIR=/path/to/installed/openfhe if you installed OpenFHE elsewhere`<br>
-    `make`<br>
-    `make install  # You may have to run sudo make install`<br>
+### Install Additional Libraries
 
-
-5. Test (https://github.com/openfheorg/openfhe-python/blob/main/tests/README.md):<br>
-    `python -c "__import__('openfhe')"`<br>
-
-6. Copy compiled `openfhe.cpython-37m-x86_64-linux-gnu.so` to `<path to test code>/Federated-Learning-PyTorch_HE_share/src/`
-
-- Compiled file:<br>
-  ![image](install_images/compiled_file.png)
-
-
-- Copied file to test code:<br>
-  ![image](install_images/copied_file.png)
-
-## Install Pyfhel and TenSeal<br>
-`pip install tenseal==0.3.14`<br>
-`pip install Pyfhel==3.4.2`<br>
-
+```bash
+pip install tenseal==0.3.14
+pip install Pyfhel==3.4.2
+```
 
 ## Experiments
-### Models to be tested:
-lenet, mobilenet_v1, mobilenet_v2, mobilenet_V3, resnet18, resnet34, resnet50, efficientnetb0, efficientnetb5, efficientnetb7
 
-### Test of speed
-- 3 clients
-- 5 training rounds
-- 1 local epoch
-- batch size = 16 (lower batchsize for efficientnet b7 because it requires much memory)
+### Supported Models
+- LeNet
+- MobileNet v1, v2, v3
+- ResNet-18, ResNet-34, ResNet-50
+- EfficientNet-B0, EfficientNet-B5, EfficientNet-B7
 
-### Accuracy
-- 3 clients
-- 10 training rounds
-- 5 local epoch
-- batch size = 16 (lower batchsize for efficientnet b7 because it requires much memory)
+### Experimental Settings
 
-## Test
-Before executing, please make sure the terminal switch to the virtual environment if using anaconda
+#### Speed Tests
+- **Clients**: 3
+- **Training rounds**: 5
+- **Local epochs**: 1
+- **Batch size**: 16 (lower for EfficientNet-B7 due to memory requirements)
 
-`python -u main.py --he_lib TenSeal_CKKS_without_flatten --model lenet`
+#### Accuracy Tests
+- **Clients**: 3
+- **Training rounds**: 10
+- **Local epochs**: 5
+- **Batch size**: 16 (lower for EfficientNet-B7 due to memory requirements)
 
-## Script to call execution
-Before executing the script, please make sure the terminal switch to the virtual environment if using anaconda
+## Running the Code
 
-`<path to test code>/Federated-Learning-PyTorch_HE_share/execute.sh` calls test with set arguments, and logs down execution accuracy to `<path to test code>/<HE_library>_<model arch>_<ring dimension>_<scale bit>_<date>.log`.<br>
-For example: OpenFHE_mobilenet_v3_4096_14_20240805.log records the content using OpenFHE to encrypt mobilnetv3, the ring dimension is 4096, and scale bit is 14.
+### Prerequisites
+Make sure to activate your virtual environment if using Anaconda before executing any commands.
 
-In addition, execution time are recorded and saved as Python dictionary, which is stored at `<path to test code>/save/<HE_library>_<ring dimension>_<scale bit>_<date time>`.<br>
-For example: OpenFHE_CKKS_4096_14_2024-08-12_19-19-24 records the content using OpenFHE, the ring dimension is 4096, and scale bit is 14.
-Script `<path to test code>/src/export_ckpt_to_excel.py` and `call_export_ckpt_to_excel.sh` can be used to export time execution to excel files, but currently supports settings for 3 clients, 5 training rounds, and 1 local epoch.
+### Basic Execution
+```bash
+python -u main.py --he_lib TenSeal_CKKS_without_flatten --model lenet 2>&1 | tee training_log.log
+```
 
+### Automated Execution Script
+Use the provided execution script for automated testing:
 
-## Help
-The arguments values are set in options.py, and main.py is executed with all setup arguments.
+```bash
+<path_to_project>/Federated-Learning-PyTorch_HE_share/execute.sh
+```
+
+This script:
+- Executes tests with predefined arguments
+- Logs accuracy results to: `<HE_library>_<model_arch>_<ring_dimension>_<scale_bit>_<date>.log`
+- Saves execution times to: `save/<HE_library>_<ring_dimension>_<scale_bit>_<datetime>/`
+
+**Example log files:**
+- `OpenFHE_mobilenet_v3_4096_14_20240805.log`
+- `OpenFHE_CKKS_4096_14_2024-08-12_19-19-24/`
+
+### Exporting Results
+Use the provided scripts to export execution times to Excel files:
+- `src/export_ckpt_to_excel.py`
+- `call_export_ckpt_to_excel.sh`
+
+**Note**: Currently supports settings for 3 clients, 5 training rounds, and 1 local epoch.
+
+## Implementation Notes
+
+- The current implementation only supports selective encryption on the CKKS scheme
+- All configuration arguments are defined in `options.py`
+- Main execution is handled by `main.py` with setup arguments
+
+## Command Line Arguments
+
 ```
 usage: python main.py [ARGUMENTS]
 
-algorithm arguments:
-  --rounds ROUNDS       number of communication rounds, or number of epochs if
-                        --centralized (default: 200)
-  --iters ITERS         number of iterations: the iterations of a round are
-                        determined by the client with the largest number of
-                        images (default: None)
-  --num_clients NUM_CLIENTS, -K NUM_CLIENTS
-                        number of clients (default: 100)
-  --frac_clients FRAC_CLIENTS, -C FRAC_CLIENTS
-                        fraction of clients selected at each round (default:
-                        0.1)
-  --train_bs TRAIN_BS, -B TRAIN_BS
-                        client training batch size, 0 to use the whole
-                        training set (default: 50)
-  --epochs EPOCHS, -E EPOCHS
-                        number of client epochs (default: 5)
-  --hetero HETERO       probability of clients being stragglers, i.e. training
-                        for less than EPOCHS epochs (default: 0)
-  --drop_stragglers     drop stragglers (default: False)
-  --server_lr SERVER_LR
-                        server learning rate (default: 1)
-  --server_momentum SERVER_MOMENTUM
-                        server momentum for FedAvgM algorithm (default: 0)
-  --mu MU               mu parameter for FedProx algorithm (default: 0)
-  --centralized         use centralized algorithm (default: False)
-  --fedsgd              use FedSGD algorithm (default: False)
-  --fedir               use FedIR algorithm (default: False)
-  --vc_size VC_SIZE     use FedVC algorithm with virtual client size VC_SIZE
-                        (default: None)
+Algorithm Arguments:
+  --rounds ROUNDS              Number of communication rounds (default: 200)
+  --iters ITERS               Number of iterations per round (default: None)
+  --num_clients NUM_CLIENTS   Number of clients (default: 100)
+  --frac_clients FRAC_CLIENTS Fraction of clients selected per round (default: 0.1)
+  --train_bs TRAIN_BS         Client training batch size (default: 50)
+  --epochs EPOCHS             Number of client epochs (default: 5)
+  --hetero HETERO             Probability of stragglers (default: 0)
+  --drop_stragglers           Drop stragglers (default: False)
+  --server_lr SERVER_LR       Server learning rate (default: 1)
+  --server_momentum           Server momentum for FedAvgM (default: 0)
+  --mu MU                     Mu parameter for FedProx (default: 0)
+  --centralized               Use centralized algorithm (default: False)
+  --fedsgd                    Use FedSGD algorithm (default: False)
+  --fedir                     Use FedIR algorithm (default: False)
+  --vc_size VC_SIZE          Virtual client size for FedVC (default: None)
 
-dataset and split arguments:
-  --dataset {cifar10,fmnist,mnist}
-                        dataset, place yours in datasets.py (default: cifar10)
-  --dataset_args DATASET_ARGS
-                        dataset arguments (default: augment=True)
-  --frac_valid FRAC_VALID
-                        fraction of the training set to use for validation
-                        (default: 0)
-  --iid IID             identicalness of client distributions (default: inf)
-  --balance BALANCE     balance of client distributions (default: inf)
+Dataset and Split Arguments:
+  --dataset {cifar10,fmnist,mnist}  Dataset selection (default: cifar10)
+  --dataset_args             Dataset arguments (default: augment=True)
+  --frac_valid               Validation fraction (default: 0)
+  --iid IID                  Client distribution identicalness (default: inf)
+  --balance BALANCE          Client distribution balance (default: inf)
 
-model, optimizer and scheduler arguments:
+Model, Optimizer, and Scheduler Arguments:
   --model {cnn_cifar10,cnn_mnist,efficientnet,ghostnet,lenet5,lenet5_orig,mlp_mnist,mnasnet,mobilenet_v3}
-                        model, place yours in models.py (default: lenet5)
-  --model_args MODEL_ARGS
-                        model arguments (default: ghost=True,norm=None)
-  --optim {adam,sgd}    optimizer, place yours in optimizers.py (default: sgd)
-  --optim_args OPTIM_ARGS
-                        optimizer arguments (default:
-                        lr=0.01,momentum=0,weight_decay=4e-4)
-  --sched {const,fixed,plateau_loss,step}
-                        scheduler, place yours in schedulers.py (default:
-                        fixed)
-  --sched_args SCHED_ARGS
-                        scheduler arguments (default: None)
+                             Model selection (default: lenet5)
+  --model_args               Model arguments (default: ghost=True,norm=None)
+  --optim {adam,sgd}         Optimizer selection (default: sgd)
+  --optim_args               Optimizer arguments (default: lr=0.01,momentum=0,weight_decay=4e-4)
+  --sched {const,fixed,plateau_loss,step}  Scheduler selection (default: fixed)
+  --sched_args               Scheduler arguments (default: None)
 
-output arguments:
-  --client_stats_every CLIENT_STATS_EVERY
-                        compute and print client statistics every
-                        CLIENT_STATS_EVERY batches, 0 for every epoch
-                        (default: 0)
-  --server_stats_every SERVER_STATS_EVERY
-                        compute, print and log server statistics every
-                        SERVER_STATS_EVERY rounds (default: 1)
-  --name NAME           log to runs/NAME and save checkpoints to save/NAME,
-                        None for YYYY-MM-DD_HH-MM-SS (default: None)
-  --no_log              disable logging (default: False)
-  --no_save             disable checkpoints (default: False)
-  --quiet, -q           less verbose output (default: False)
+Output Arguments:
+  --client_stats_every       Client statistics frequency (default: 0)
+  --server_stats_every       Server statistics frequency (default: 1)
+  --name NAME                Experiment name for logging (default: None)
+  --no_log                   Disable logging (default: False)
+  --no_save                  Disable checkpoints (default: False)
+  --quiet, -q                Reduce output verbosity (default: False)
 
-other arguments:
-  --test_bs TEST_BS     client test/validation batch size (default: 256)
-  --seed SEED           random seed (default: 0)
-  --device {cuda:0,cpu}
-                        device to train/validate/test with (default: cuda:0)
-  --resume              resume experiment from save/NAME checkpoint (default:
-                        False)
-  --help, -h            show this help message and exit (default: False)
+Other Arguments:
+  --test_bs TEST_BS          Test/validation batch size (default: 256)
+  --seed SEED                Random seed (default: 0)
+  --device {cuda:0,cpu}      Training device (default: cuda:0)
+  --resume                   Resume from checkpoint (default: False)
+  --help, -h                 Show help message (default: False)
 
-Homomorphic encryption related arguments
-  --he_lib              library for homomorphic encryption, available choice:
-                        OpenFHE_CKKS, TenSeal_CKKS_without_flatten, Pyfhel_CKKS
-  --ring_dim            ring dimension (polynomial degree) for CKKS scheme:
-                        [1024, 2048, 4096, 8192]
-  --scale_bit           scaling bit size, available options: [14, 20, 33, 40, 52]
+Homomorphic Encryption Arguments:
+  --he_lib                   HE library choice: OpenFHE_CKKS, TenSeal_CKKS_without_flatten, Pyfhel_CKKS
+  --ring_dim                 Ring dimension: [1024, 2048, 4096, 8192]
+  --scale_bit                Scaling bit size: [14, 20, 33, 40, 52]
 ```
+
+## Acknowledgments
+
+We gratefully acknowledge the following projects and contributors:
+
+- [**Federated-Learning-PyTorch**](https://github.com/c-gabri/Federated-Learning-PyTorch): For the federated learning implementation framework
+- [**FedML-HE**](https://arxiv.org/abs/2303.10837): For the innovative algorithm that inspired our "magnitude-based sensitivity" approach
+
+## Authors
+
+This framework was developed by Ren-Yi Huang at the University of South Florida.
+
+## Contact
+
+If you have any questions, please feel free to:
+- Open an issue on GitHub
+- Contact us via email
+
+## License
+
+This repository is released under the GNU General Public License. See [LICENSE](LICENSE) for additional details.
