@@ -7,16 +7,24 @@ Federated Learning (FL) enables collaborative model training across distributed 
 
 ## Citation
 
-If you find [Paper name] useful or relevant to your research, please kindly cite our paper using the following BibTeX:
+If you find this paper useful or relevant to your research, please kindly cite our paper using the following BibTeX:
 
 ```bibtex
-@inproceedings{[citation_key],
-  title={[Paper Title]},
-  author={[Author Names]},
-  booktitle={[Conference or Journal Name]},
-  pages={[Page Numbers]},
-  year={[Year]},
-  organization={[Organization]}
+@article{muhammad2025secure,
+  title={Secure Distributed Learning for CAVs: Defending Against Gradient Leakage with Leveled Homomorphic Encryption},
+  author={Ali N, Muhammad and Huang, Ren-Yi and Samaraweera, Dumindu and Shekhar, Prashant},
+  journal={arXiv preprint arXiv:2506.07894},
+  year={2025},
+  url={https://arxiv.org/abs/2506.07894}
+}
+
+@misc{renyi2025selectivehe,
+  author       = {Huang, Ren-Yi and Samaraweera, Dumindu},
+  title        = {Federated Learning with Selective Encryption on CKKS},
+  year         = {2025},
+  publisher    = {GitHub},
+  journal      = {GitHub repository},
+  howpublished = {\url{https://github.com/Rahn80643/Federated-Learning-PyTorch-HE-Smap}}
 }
 ```
 
