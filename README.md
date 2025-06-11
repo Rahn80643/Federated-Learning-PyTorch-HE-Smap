@@ -1,10 +1,9 @@
-# [Paper name]
+# Secure Distributed Learning for CAVs: Defending Against Gradient Leakage with Leveled Homomorphic Encryption
 
 This code applies homomorphic encryption (CKKS scheme) to federated learning. The implementation is adopted from [**Federated-Learning-PyTorch**](https://github.com/c-gabri/Federated-Learning-PyTorch). Clients train and encrypt models locally, while the server aggregates encrypted models without accessing the exact model parameters.
 
 ## Abstract
-
-[Insert your paper abstract here]
+Federated Learning (FL) enables collaborative model training across distributed clients without sharing raw data, making it a promising approach for privacy-preserving machine learning in domains like Connected and Autonomous Vehicles (CAVs). However, recent studies have shown that exchanged model gradients remain susceptible to inference attacks such as Deep Leakage from Gradients (DLG), which can reconstruct private training data. While existing defenses like Differential Privacy (DP) and Secure Multi-Party Computation (SMPC) offer protection, they often compromise model accuracy. To that end, Homomorphic Encryption (HE) offers a promising alternative by enabling lossless computation directly on encrypted data, thereby preserving both privacy and model utility. However, HE introduces significant computational and communication overhead, which can hinder its practical adoption. To address this, we systematically evaluate various leveled HE schemes to identify the most suitable for FL in resource-constrained environments due to its ability to support fixed-depth computations without requiring costly bootstrapping. Our contributions in this paper include a comprehensive evaluation of HE schemes for real-world FL applications, a selective encryption strategy that targets only the most sensitive gradients to minimize computational overhead, and the development of a full HE-based FL pipeline that effectively mitigates DLG attacks while preserving model accuracy. We open-source our implementation to encourage reproducibility and facilitate adoption in safety-critical domains.
 
 ## Citation
 
